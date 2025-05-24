@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/lib/codegen/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/lib/common/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/lib/config/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/lib/encryption/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/lib/logic/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/lib/proto-derive/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/lib/proto/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/lib/service/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/servers/dbgate-server/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/servers/dispatch-server/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/servers/game-server/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/servers/gate-server/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

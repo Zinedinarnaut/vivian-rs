@@ -23,7 +23,7 @@
                     "$type": "Share.CConfigLogText",
                     "ID": 2,
                     "Messages": [
-                        "Welcome to vivian-rs Debug Menu!"
+                        "Welcome to the Debug Menu! Select a character to unlock or return to the city."
                     ],
                     "LogTitle": "Debug Menu",
                     "Voicelines": []
@@ -36,8 +36,8 @@
                     "$type": "Share.CConfigMakeDialogChoice",
                     "ID": 4,
                     "Title": "Debug Menu",
-                    "Description": "Welcome to vivian-rs Debug Menu!",
-                    "QuestionDescription": "Make a choice..",
+                    "Description": "Welcome to the Debug Menu! Choose an option to proceed.",
+                    "QuestionDescription": "What would you like to do?",
                     "ChoiceDetails": [
                         {
                             "OptionText": "Unlock a character...",
@@ -58,7 +58,7 @@
                 {
                     "$type": "Share.CConfigFinishHollow",
                     "ID": 5,
-                    "Predicates": 
+                    "Predicates":
                     [
                         {
                             "$type": "Share.CConfigEventByChoiceServer",
@@ -70,9 +70,9 @@
                 {
                     "$type": "Share.CConfigMakeDialogChoice",
                     "ID": 1000,
-                    "Title": "Debug Menu",
-                    "Description": "Choose an agent you want to obtain",
-                    "QuestionDescription": "Make a choice..",
+                    "Title": "Character Selection",
+                    "Description": "Select a character to unlock for your roster.",
+                    "QuestionDescription": "Which character do you want to unlock?",
                     "ChoiceDetails": [
                         {
                             "OptionText": "Anby",

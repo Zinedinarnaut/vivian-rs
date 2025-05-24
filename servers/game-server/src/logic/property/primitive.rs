@@ -1,6 +1,7 @@
 use super::Property;
 
 #[derive(Debug, Default, Clone)]
+#[derive(PartialEq)]
 pub struct PrimitiveProperty<T> {
     value: T,
     is_changed: bool,
