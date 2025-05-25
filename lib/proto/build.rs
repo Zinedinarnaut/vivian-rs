@@ -59,7 +59,7 @@ fn build_cs_protocol() {
         Path::new(OUT_CURRENT),
         Path::new(OUT_FINAL),
     )
-    .unwrap();
+        .unwrap();
 
     std::fs::remove_file(OUT_INTERNAL).unwrap();
     std::fs::remove_file(OUT_CURRENT).unwrap();
