@@ -358,6 +358,53 @@ pub struct GetQuestDataCsReq {
     #[prost(uint32, tag = "9", xor = "4059")]
     pub quest_type: u32,
 }
+use proto_derive::{Message, NetCmd};
+
+#[derive(Clone, PartialEq, Message, NetCmd)]
+#[cmd_id(302)]
+pub struct GetOnlineFriendsListCsReq {}
+
+#[derive(Clone, PartialEq, Message, NetCmd)]
+#[cmd_id(303)]
+pub struct GetOnlineFriendsListScRsp {
+    #[prost(int32, tag = "1", xor = "12219")]
+    pub retcode: i32,
+    #[prost(message, repeated, tag = "2")]
+    pub online_friends: Vec<FriendInfo>,
+}
+
+#[derive(Clone, PartialEq, Message, NetCmd)]
+#[cmd_id(306)]
+pub struct GetChatEmojiListCsReq {}
+
+#[derive(Clone, PartialEq, Message, NetCmd)]
+#[cmd_id(307)]
+pub struct GetChatEmojiListScRsp {
+    #[prost(int32, tag = "1", xor = "12219")]
+    pub retcode: i32,
+    #[prost(message, repeated, tag = "2")]
+    pub emojis: Vec<EmojiInfo>,
+}
+
+#[derive(Clone, PartialEq, Message)]
+pub struct FriendInfo {
+    #[prost(uint32, tag = "1", xor = "4059")]
+    pub uid: u32,
+    #[prost(string, tag = "2")]
+    pub nick_name: String,
+    #[prost(uint32, tag = "3", xor = "4059")]
+    pub level: u32,
+    #[prost(bool, tag = "4")]
+    pub online: bool,
+}
+
+#[derive(Clone, PartialEq, Message)]
+pub struct EmojiInfo {
+    #[prost(uint32, tag = "1", xor = "4059")]
+    pub emoji_id: u32,
+    #[prost(string, tag = "2")]
+    pub name: String,
+}
 #[derive(Clone, PartialEq, ::proto_derive::Message, ::proto_derive::NetCmd)]
 pub struct MainCityQuestInfo {
     #[prost(uint32, repeated, tag = "2")]
