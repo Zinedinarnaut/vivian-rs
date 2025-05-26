@@ -4,3 +4,4 @@ target/
 
 # Server configuration directory
 /config/
+Cargo.lock
