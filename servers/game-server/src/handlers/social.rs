@@ -17,7 +17,7 @@ impl SocialHandler {
         }
 
         // Get friends from buddy_model
-        
+
 
         GetFriendListScRsp {
             retcode: 0,
@@ -34,7 +34,6 @@ impl SocialHandler {
         }
 
         // Get online friends from buddy_model
-  
 
         GetOnlineFriendsListScRsp {
             retcode: 0,
@@ -42,8 +41,8 @@ impl SocialHandler {
         }
     }
 
-    pub fn on_get_chat_emoji_list_cs_req(
-        context: &mut NetContext<'_>,
+    pub fn on_get_chat_emoji_list(
+        _context: &mut NetContext<'_>,
         _request: GetChatEmojiListCsReq,
     ) -> GetChatEmojiListScRsp {
         // Mock emoji list (global)
