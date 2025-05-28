@@ -1,7 +1,9 @@
+use std::collections::HashMap;
+
 use super::*;
 use vivian_codegen::Property;
 
-use property::{PropertyHashMap, PropertyHashSet, Property, PrimitiveProperty};
+use property::{PrimitiveProperty, Property, PropertyHashMap, PropertyHashSet};
 
 #[derive(Property, Default)]
 pub struct PropertyUnlockData {
@@ -13,6 +15,11 @@ pub struct PropertyUnlockData {
 pub struct QuickAccess {
     pub index: u32,
     pub quick_access_type: i32,
+}
+
+#[derive(Property, Default)]
+pub struct PropertyTeleportUnlockData {
+    pub unlocked_id: PropertyHashSet<i32>,
 }
 
 #[derive(Property, Default)]
@@ -42,15 +49,24 @@ pub struct PropertyNewsStandData {
     pub last_sign_time: PrimitiveProperty<i64>,
 }
 
+#[derive(Default)]
+pub struct InputSetting {
+    pub input_type_map: HashMap<u32, i32>,
+}
+
 #[derive(Property, Default)]
 pub struct PropertySwitchData {
     pub open_system_id: PropertyHashSet<u32>,
+    pub setting_switch_map: PropertyHashMap<u32, u32>,
+    pub system_switch_state_map: PropertyHashMap<u32, bool>,
+    pub input_setting_map: PropertyHashMap<u32, InputSetting>,
 }
 
 #[derive(Model)]
 pub struct MiscModel {
     pub switch: PropertySwitchData,
     pub unlock: PropertyUnlockData,
+    pub teleport: PropertyTeleportUnlockData,
     pub newbie: PropertyNewbieData,
     pub news_stand: PropertyNewsStandData,
     pub post_girl: PropertyPostGirlData,
@@ -63,6 +79,20 @@ impl MiscModel {
                 .switch
                 .map(|data| PropertySwitchData {
                     open_system_id: data.open_system_id_list.into_iter().collect(),
+                    setting_switch_map: data.setting_switch_map.into_iter().collect(),
+                    system_switch_state_map: data.system_switch_state_map.into_iter().collect(),
+                    input_setting_map: data
+                        .input_setting_map
+                        .into_iter()
+                        .map(|(ty, setting)| {
+                            (
+                                ty,
+                                InputSetting {
+                                    input_type_map: setting.input_type_map,
+                                },
+                            )
+                        })
+                        .collect(),
                 })
                 .unwrap_or_default(),
             unlock: pb
@@ -104,6 +134,12 @@ impl MiscModel {
                     random_toggle: data.post_girl_random_toggle.into(),
                 })
                 .unwrap_or_default(),
+            teleport: pb
+                .teleport
+                .map(|data| PropertyTeleportUnlockData {
+                    unlocked_id: data.unlocked_id_list.into_iter().collect(),
+                })
+                .unwrap_or_default(),
         }
     }
 }
@@ -113,6 +149,31 @@ impl Saveable for MiscModel {
         root.misc = Some(MiscData {
             switch: Some(SwitchData {
                 open_system_id_list: self.switch.open_system_id.iter().copied().collect(),
+                setting_switch_map: self
+                    .switch
+                    .setting_switch_map
+                    .iter()
+                    .map(|(&k, &v)| (k, v))
+                    .collect(),
+                system_switch_state_map: self
+                    .switch
+                    .system_switch_state_map
+                    .iter()
+                    .map(|(&ty, &state)| (ty, state))
+                    .collect(),
+                input_setting_map: self
+                    .switch
+                    .input_setting_map
+                    .iter()
+                    .map(|(&ty, setting)| {
+                        (
+                            ty,
+                            vivian_proto::server_only::InputSettingInfo {
+                                input_type_map: setting.input_type_map.clone(),
+                            },
+                        )
+                    })
+                    .collect(),
             }),
             unlock: Some(UnlockData {
                 unlocked_id_list: self.unlock.unlocked_id.iter().copied().collect(),
@@ -140,6 +201,9 @@ impl Saveable for MiscModel {
                     .collect(),
                 selected_id_list: self.post_girl.selected_id.iter().copied().collect(),
                 post_girl_random_toggle: self.post_girl.random_toggle.get(),
+            }),
+            teleport: Some(TeleportUnlockData {
+                unlocked_id_list: self.teleport.unlocked_id.iter().copied().collect(),
             }),
         });
     }
@@ -191,4 +255,3 @@ impl PropertyNewsStandData {
         }
     }
 }
-

@@ -86,11 +86,7 @@ impl LoginDataSyncComponent for AvatarModel {
 }
 
 impl LoginDataSyncComponent for QuestModel {
-    fn prepare_responses(
-        &self,
-        sync_helper: &mut DataSyncHelper,
-        _: &NapResources,
-    ) {
+    fn prepare_responses(&self, sync_helper: &mut DataSyncHelper, _: &NapResources) {
         sync_helper.add_response(
             SyncType::BasicData,
             vivian_proto::GetQuestDataScRsp {
@@ -127,11 +123,7 @@ impl LoginDataSyncComponent for QuestModel {
 }
 
 impl LoginDataSyncComponent for ArchiveModel {
-    fn prepare_responses(
-        &self,
-        sync_helper: &mut DataSyncHelper,
-        _: &NapResources,
-    ) {
+    fn prepare_responses(&self, sync_helper: &mut DataSyncHelper, _: &NapResources) {
         sync_helper.add_response(
             SyncType::BasicData,
             vivian_proto::GetArchiveDataScRsp {
@@ -157,11 +149,7 @@ impl LoginDataSyncComponent for ArchiveModel {
 }
 
 impl LoginDataSyncComponent for HollowModel {
-    fn prepare_responses(
-        &self,
-        sync_helper: &mut DataSyncHelper,
-        _res: &NapResources,
-    ) {
+    fn prepare_responses(&self, sync_helper: &mut DataSyncHelper, _res: &NapResources) {
         sync_helper.add_response(
             SyncType::BasicData,
             vivian_proto::GetHollowDataScRsp {
@@ -187,11 +175,7 @@ impl LoginDataSyncComponent for HollowModel {
 }
 
 impl LoginDataSyncComponent for AbyssModel {
-    fn prepare_responses(
-        &self,
-        sync_helper: &mut DataSyncHelper,
-        _: &NapResources,
-    ) {
+    fn prepare_responses(&self, sync_helper: &mut DataSyncHelper, _: &NapResources) {
         sync_helper.add_response(
             SyncType::BasicData,
             vivian_proto::AbyssGetDataScRsp {
@@ -210,11 +194,7 @@ impl LoginDataSyncComponent for AbyssModel {
 }
 
 impl LoginDataSyncComponent for BuddyModel {
-    fn prepare_responses(
-        &self,
-        sync_helper: &mut DataSyncHelper,
-        _res: &NapResources,
-    ) {
+    fn prepare_responses(&self, sync_helper: &mut DataSyncHelper, _res: &NapResources) {
         sync_helper.add_response(
             SyncType::BasicData,
             vivian_proto::GetBuddyDataScRsp {
@@ -241,6 +221,41 @@ impl LoginDataSyncComponent for MiscModel {
 
         sync_helper.add_response(
             SyncType::ExtendData,
+            vivian_proto::GetSwitchDataScRsp {
+                retcode: 0,
+                r#type: 1,
+                setting_switch_map: self.switch.setting_switch_map.base.clone(),
+                switch_data: Some(vivian_proto::SwitchData {
+                    open_system_id_list: self.switch.open_system_id.iter().copied().collect(),
+                    system_switch_state_list: self
+                        .switch
+                        .system_switch_state_map
+                        .iter()
+                        .map(|(&ty, &state)| vivian_proto::SystemSwitchStateInfo {
+                            r#type: ty,
+                            switch_state: state,
+                        })
+                        .collect(),
+                    input_setting_map: self
+                        .switch
+                        .input_setting_map
+                        .iter()
+                        .map(|(&ty, setting)| {
+                            (
+                                ty,
+                                vivian_proto::InputSettingInfo {
+                                    input_type_map: setting.input_type_map.clone(),
+                                },
+                            )
+                        })
+                        .collect(),
+                    ..Default::default()
+                }),
+            },
+        );
+
+        sync_helper.add_response(
+            SyncType::ExtendData,
             vivian_proto::GetMiscDataScRsp {
                 retcode: 0,
                 data: Some(vivian_proto::MiscData {
@@ -256,6 +271,9 @@ impl LoginDataSyncComponent for MiscModel {
                                 r#type: item.quick_access_type,
                             })
                             .collect(),
+                    }),
+                    teleport: Some(vivian_proto::TeleportUnlockInfo {
+                        unlocked_list: self.teleport.unlocked_id.iter().copied().collect(),
                     }),
                     news_stand: Some(self.news_stand.to_client_proto()),
                     post_girl: Some(vivian_proto::PostGirlInfo {

@@ -26,6 +26,8 @@ pub struct PlayerData {
     pub scene: ::core::option::Option<SceneData>,
     #[prost(message, optional, tag = "12")]
     pub gacha: ::core::option::Option<GachaData>,
+    #[prost(message, optional, tag = "13")]
+    pub map: ::core::option::Option<MapData>,
 }
 #[derive(::proto_derive::NetCmd)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -291,12 +293,26 @@ pub struct MiscData {
     pub news_stand: ::core::option::Option<NewsStandData>,
     #[prost(message, optional, tag = "5")]
     pub post_girl: ::core::option::Option<PostGirlData>,
+    #[prost(message, optional, tag = "6")]
+    pub teleport: ::core::option::Option<TeleportUnlockData>,
+}
+#[derive(::proto_derive::NetCmd)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct InputSettingInfo {
+    #[prost(map = "uint32, int32", tag = "1")]
+    pub input_type_map: ::std::collections::HashMap<u32, i32>,
 }
 #[derive(::proto_derive::NetCmd)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SwitchData {
     #[prost(uint32, repeated, tag = "1")]
     pub open_system_id_list: ::prost::alloc::vec::Vec<u32>,
+    #[prost(map = "uint32, uint32", tag = "2")]
+    pub setting_switch_map: ::std::collections::HashMap<u32, u32>,
+    #[prost(map = "uint32, bool", tag = "3")]
+    pub system_switch_state_map: ::std::collections::HashMap<u32, bool>,
+    #[prost(map = "uint32, message", tag = "4")]
+    pub input_setting_map: ::std::collections::HashMap<u32, InputSettingInfo>,
 }
 #[derive(::proto_derive::NetCmd)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
@@ -363,6 +379,12 @@ pub struct PostGirlData {
     pub selected_id_list: ::prost::alloc::vec::Vec<u32>,
     #[prost(bool, tag = "3")]
     pub post_girl_random_toggle: bool,
+}
+#[derive(::proto_derive::NetCmd)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TeleportUnlockData {
+    #[prost(int32, repeated, tag = "1")]
+    pub unlocked_id_list: ::prost::alloc::vec::Vec<i32>,
 }
 #[derive(::proto_derive::NetCmd)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -562,6 +584,40 @@ pub struct GachaData {
     pub gacha_statistics_list: ::prost::alloc::vec::Vec<GachaStatisticsInfo>,
     #[prost(uint32, tag = "2")]
     pub gacha_random: u32,
+}
+#[derive(::proto_derive::NetCmd)]
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MapAreaGroupInfo {
+    #[prost(uint32, tag = "1")]
+    pub group_id: u32,
+    #[prost(bool, tag = "2")]
+    pub is_unlocked: bool,
+    #[prost(uint32, tag = "3")]
+    pub area_progress: u32,
+}
+#[derive(::proto_derive::NetCmd)]
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct MapAreaStreetInfo {
+    #[prost(uint32, tag = "1")]
+    pub area_id: u32,
+    #[prost(bool, tag = "2")]
+    pub is_unlocked: bool,
+    #[prost(uint32, tag = "3")]
+    pub area_progress: u32,
+    #[prost(bool, tag = "4")]
+    pub location_pop_showed: bool,
+    #[prost(bool, tag = "5")]
+    pub new_area_showed: bool,
+    #[prost(bool, tag = "6")]
+    pub new_area_portals_showed: bool,
+}
+#[derive(::proto_derive::NetCmd)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MapData {
+    #[prost(message, repeated, tag = "1")]
+    pub area_group_list: ::prost::alloc::vec::Vec<MapAreaGroupInfo>,
+    #[prost(message, repeated, tag = "2")]
+    pub area_street_list: ::prost::alloc::vec::Vec<MapAreaStreetInfo>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
