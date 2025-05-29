@@ -6,6 +6,7 @@ use vivian_models::InputSetting;
 use vivian_proto::{
     BattleReportCsReq, BattleReportScRsp, EndNewbieCsReq, EndNewbieScRsp, FinishNewbieGroupCsReq, FinishNewbieGroupScRsp, GameLogReportCsReq, GameLogReportScRsp, GetMiscDataCsReq, GetMiscDataScRsp, GetNewsStandDataCsReq, GetNewsStandDataScRsp, GetSwitchDataCsReq, GetSwitchDataScRsp, ItemRewardInfo, NewsStandSignCsReq, NewsStandSignScRsp, PlayerOperationCsReq, PlayerOperationScRsp, ReadNewsCsReq, ReadNewsScRsp, ReportUiLayoutPlatformCsReq, ReportUiLayoutPlatformScRsp, SavePlayerAccessoryCsReq, SavePlayerAccessoryScRsp, SavePlayerSystemSettingCsReq, SavePlayerSystemSettingScRsp, SelectPostGirlCsReq, SelectPostGirlScRsp, SyncGlobalVariablesCsReq, SyncGlobalVariablesScRsp, VideoGetInfoCsReq, VideoGetInfoScRsp
 };
+use rand::Rng; // Added for random number generation
 
 use crate::{sync::SyncType, util::item_util};
 
@@ -144,17 +145,20 @@ impl MiscHandler {
             .last_sign_time
             .set(time_util::unix_timestamp_seconds());
 
-        // TODO: hardcoded reward!
-        item_util::add_item(context.player, 10, 8888);
+        // Generate random reward amount between 1000 and 8000
+        let reward_amount = rand::thread_rng().gen_range(1000..=8000);
+        let reward = ItemRewardInfo {
+            item_id: 10, // Keep original item_id
+            amount: reward_amount,
+        };
+
+        item_util::add_item(context.player, reward.item_id, reward.amount);
 
         NewsStandSignScRsp {
             retcode: 0,
             sign_count: sign_count as i32,
             last_sign_time: context.player.misc_model.news_stand.last_sign_time.get(),
-            reward_list: vec![ItemRewardInfo {
-                item_id: 10,
-                amount: 8888,
-            }],
+            reward_list: vec![reward],
         }
     }
 
@@ -287,9 +291,9 @@ impl MiscHandler {
             let Some(player_accessory) = player_accessory_data
                 .player_accessory_map
                 .get_mut(&info.avatar_id)
-                else {
-                    return SavePlayerAccessoryScRsp { retcode: 1 }
-                };
+            else {
+                return SavePlayerAccessoryScRsp { retcode: 1 }
+            };
 
             player_accessory.avatar_skin_id = info.avatar_skin_id;
 
