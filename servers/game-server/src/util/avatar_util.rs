@@ -3,36 +3,27 @@ use config::AvatarBaseTemplate;
 use std::collections::HashMap;
 use vivian_logic::item::{AvatarItem, EAvatarSkillType};
 
-use crate::{config::FirstLoginAvatarConfig, player::Player};
+use crate::player::Player;
 
 pub fn unlock_avatars_on_first_login(player: &mut Player) {
-    let cfg = &player.resources.gameplay.first_login.avatar;
+    const DEFAULT_AVATARS: &[u32] = &[1011, 1081];
 
-    if cfg.unlock_all {
-        player
-            .resources
-            .templates
-            .avatar_base_template_tb()
-            .for_each(|tmpl| unlock_avatar(player, &tmpl, None, Some(cfg)));
-    } else {
-        cfg.unlock_id_list
-            .iter()
-            .filter_map(|id| {
-                player
-                    .resources
-                    .templates
-                    .avatar_base_template_tb()
-                    .find(|tmpl| tmpl.id() == *id)
-            })
-            .for_each(|tmpl| unlock_avatar(player, &tmpl, None, Some(cfg)));
-    }
+    DEFAULT_AVATARS
+        .iter()
+        .filter_map(|id| {
+            player
+                .resources
+                .templates
+                .avatar_base_template_tb()
+                .find(|tmpl| tmpl.id() == *id)
+        })
+        .for_each(|tmpl| unlock_avatar(player, &tmpl, None));
 }
 
 pub fn unlock_avatar(
     player: &mut Player,
     base_template: &AvatarBaseTemplate,
     perform_type: Option<vivian_proto::add_avatar_sc_notify::PerformType>,
-    first_login_cfg: Option<&FirstLoginAvatarConfig>,
 ) {
     const AVATAR_BLACKLIST: &[u32] = &[];
 
@@ -42,30 +33,22 @@ pub fn unlock_avatar(
         && !player.avatar_model.avatar_map.contains_key(&avatar_id)
         && !AVATAR_BLACKLIST.contains(&avatar_id)
     {
-        let mut skill_level_map: HashMap<EAvatarSkillType, u32> = (0..EAvatarSkillType::EnumCount
+        let skill_level_map: HashMap<EAvatarSkillType, u32> = (0..EAvatarSkillType::EnumCount
             .into())
             .map(|ty| EAvatarSkillType::try_from(ty).unwrap())
             .zip([0].into_iter().cycle())
             .collect();
-        if let Some(cfg) = first_login_cfg {
-            skill_level_map = (0..EAvatarSkillType::EnumCount.into())
-                .map(|ty| EAvatarSkillType::try_from(ty).unwrap())
-                .zip(cfg.skill_level_map.clone())
-                .collect();
-        }
 
         player.avatar_model.avatar_map.insert(
             avatar_id,
             AvatarItem {
                 id: avatar_id,
-                level: first_login_cfg.map_or(1, |cfg| cfg.level),
+                level: 1,
                 exp: 0,
-                rank: first_login_cfg.map_or(1, |cfg| cfg.rank),
-                unlocked_talent_num: first_login_cfg.map_or(0, |cfg| cfg.unlocked_talent_num),
-                talent_switch: first_login_cfg.map_or([false; 6], |cfg| {
-                    cfg.talent_switch.as_slice().try_into().unwrap()
-                }),
-                passive_skill_level: first_login_cfg.map_or(0, |cfg| cfg.passive_skill_level),
+                rank: 1,
+                unlocked_talent_num: 0,
+                talent_switch: [false; 6],
+                passive_skill_level: 0,
                 skill_level_map,
                 weapon_uid: 0,
                 show_weapon_type: vivian_proto::AvatarShowWeaponType::ShowWeaponLock.into(),
@@ -84,4 +67,36 @@ pub fn unlock_avatar(
                 .insert(avatar_id, perform_type);
         }
     }
+}
+
+pub fn dress_equip(player: &mut Player, avatar_id: u32, (equip_uid, dress_index): (u32, u32)) {
+    player
+        .avatar_model
+        .avatar_map
+        .iter()
+        .filter_map(|(&id, avatar)| {
+            avatar
+                .dressed_equip_map
+                .contains_key(&equip_uid)
+                .then_some((id, equip_uid))
+        })
+        .collect::<Vec<_>>()
+        .into_iter()
+        .for_each(|(id, equip_uid)| {
+            player
+                .avatar_model
+                .avatar_map
+                .get_mut(&id)
+                .unwrap()
+                .dressed_equip_map
+                .remove(&equip_uid);
+        });
+
+    let avatar = player.avatar_model.avatar_map.get_mut(&avatar_id).unwrap();
+
+    avatar
+        .dressed_equip_map
+        .retain(|_, dressed_equip_index| *dressed_equip_index != dress_index);
+
+    avatar.dressed_equip_map.insert(equip_uid, dress_index);
 }
